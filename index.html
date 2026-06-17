@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEON GUESS | Cyber Protocol</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Geist:wght@100;300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- External Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Separated Logic & Shaders -->
+    <script src="shader.js" defer></script>
+    <script src="script.js" defer></script>
+</head>
+<body class="font-body">
+
+    <!-- Global Shader Background -->
+    <div class="fixed inset-0 w-full h-full -z-10 opacity-40">
+        <canvas id="shader-canvas-ANIMATION_1" class="w-full h-full"></canvas>
+    </div>
+
+    <!-- Top Navigation -->
+    <header class="fixed header flex justify-between items-center z-50">
+        <div class="flex items-center gap-4">
+            <h1 class="header-title">NEON GUESS</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="icon-btn" id="toggleAudio">
+                <span class="material-symbols-outlined" data-icon="volume_up">volume_up</span>
+            </button>
+            <button class="icon-btn nav-btn" data-target="view-leaderboard">
+                <span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+            </button>
+            <button class="icon-btn nav-btn" data-target="view-settings">
+                <span class="material-symbols-outlined" data-icon="settings">settings</span>
+            </button>
+            <div class="flex items-center gap-2 ml-4">
+                <div class="avatar-container">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDp5DidrsRPiGhjDF8gJBP3he2qXxb05e5f6XeR-1G7cJXSB3UsEvnoeHdMx6Mc1Ycw9yvZTJuLywr6h7wTDwJYuAXWVxQuiBKSImZuFrDr5A6A3IBxSmDfqpUeO7npDnwIqWNNrJJviCTws5DeCieSKPatYILctSsw4GJgdaqCgTbIQMECAGQ7thwRT5oMvfqlJLBIGctvh2LSkMO3ZVwFjg3u-RQQAyNIn5ToMPA1HbDBG6hxGW_8Fswt_GzYMHkPFwAWGTSvig" alt="Avatar">
+                </div>
+                <div class="md-block">
+                    <p class="font-label-caps text-primary">LVL 24</p>
+                    <div class="level-bar-bg">
+                        <div class="level-bar-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="px-4 mb-8">
+                <p class="font-label-caps text-on-surface-variant mb-2">PLAYER PROFILE</p>
+                <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border">
+                    <div class="flex-col">
+                        <span class="font-bold text-sm text-primary">CYBER_GUEST_01</span>
+                        <br>
+                        <span class="font-label-caps text-xs text-on-surface-variant mt-1">LEVEL 24 PHANTOM</span>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="flex-grow sidebar-nav">
+                <a href="#" class="nav-btn active" data-target="view-dashboard">
+                    <span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+                    <span>DASHBOARD</span>
+                </a>
+                <a href="#" class="nav-btn" data-target="view-history">
+                    <span class="material-symbols-outlined" data-icon="history">history</span>
+                    <span>HISTORY</span>
+                </a>
+                <a href="#" class="nav-btn" data-target="view-achievements">
+                    <span class="material-symbols-outlined" data-icon="emoji_events">emoji_events</span>
+                    <span>ACHIEVEMENTS</span>
+                </a>
+                <a href="#" class="nav-btn" data-target="view-leaderboard">
+                    <span class="material-symbols-outlined" data-icon="military_tech">military_tech</span>
+                    <span>RANKINGS</span>
+                </a>
+            </nav>
+            
+            <div class="px-4 mt-8">
+                <button class="btn-primary nav-btn" data-target="view-upgrade">UPGRADE GEAR</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div id="view-dashboard" class="view-section w-full flex flex-col items-center">
+            <!-- Game HUD (Floating Stats) -->
+            <div class="stats-grid animate-entrance">
+                <div class="glass-card stat-card">
+                    <span class="material-symbols-outlined text-secondary" data-icon="timer">timer</span>
+                    <div>
+                        <p class="font-label-caps text-xs text-on-surface-variant">TIME REMAINING</p>
+                        <p class="font-mono text-xl text-secondary" id="timerDisplay">01:00</p>
+                    </div>
+                </div>
+                
+                <div class="glass-card stat-card">
+                    <span class="material-symbols-outlined text-primary" data-icon="rebase_edit">rebase_edit</span>
+                    <div>
+                        <p class="font-label-caps text-xs text-on-surface-variant">ATTEMPTS LEFT</p>
+                        <p class="font-mono text-xl text-primary" id="attemptsDisplay">07</p>
+                    </div>
+                </div>
+                
+                <div class="glass-card stat-card">
+                    <span class="material-symbols-outlined text-tertiary" data-icon="token">token</span>
+                    <div>
+                        <p class="font-label-caps text-xs text-on-surface-variant">POTENTIAL XP</p>
+                        <p class="font-mono text-xl text-tertiary" id="xpPotential">500</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-grid">
+                <!-- History & Leaderboard -->
+                <div class="side-panel flex-col gap-8">
+                    <!-- Guess History -->
+                    <section class="glass-card p-4 rounded-2xl animate-entrance delay-1">
+                        <h3 class="font-label-caps text-on-surface-variant mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+                            GUESS LOG
+                        </h3>
+                        <div class="history-container scroll-hide" id="guessHistory">
+                            <div class="history-empty">Waiting for transmission...</div>
+                        </div>
+                    </section>
+                    
+                    <!-- Leaderboard -->
+                    <section class="glass-card p-4 rounded-2xl animate-entrance delay-2 mt-8">
+                        <h3 class="font-label-caps text-on-surface-variant mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm" data-icon="military_tech">military_tech</span>
+                            ELITE RANKINGS
+                        </h3>
+                        <div id="leaderboardList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Main Game Engine -->
+                <div class="center-panel flex-col gap-8">
+                    <div class="glass-card p-6 rounded-3xl text-center relative neon-glow-primary animate-entrance delay-3" id="gameCard">
+                        
+                        <!-- Setup View -->
+                        <div id="setupView">
+                            <h2 class="font-display text-4xl text-primary mb-2">INITIALIZING...</h2>
+                            <p class="text-on-surface-variant mb-8 text-lg">Select operational difficulty level</p>
+                            
+                            <div class="difficulty-grid">
+                                <button class="difficulty-btn easy" onclick="startGame('easy')">
+                                    <span class="material-symbols-outlined text-4xl text-primary mb-2" data-icon="verified_user">verified_user</span>
+                                    <p class="font-label-caps">EASY</p>
+                                    <p class="text-xs text-on-surface-variant mt-1">10 Tries | 100 XP</p>
+                                </button>
+                                
+                                <button class="difficulty-btn medium" onclick="startGame('medium')">
+                                    <span class="material-symbols-outlined text-4xl text-secondary mb-2" data-icon="security">security</span>
+                                    <p class="font-label-caps">MEDIUM</p>
+                                    <p class="text-xs text-on-surface-variant mt-1">7 Tries | 300 XP</p>
+                                </button>
+                                
+                                <button class="difficulty-btn hard" onclick="startGame('hard')">
+                                    <span class="material-symbols-outlined text-4xl text-error mb-2" data-icon="lock_open">lock_open</span>
+                                    <p class="font-label-caps">HARD</p>
+                                    <p class="text-xs text-on-surface-variant mt-1">5 Tries | 1000 XP</p>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Active Game View -->
+                        <div id="activeGameView" class="hidden">
+                            <p class="font-label-caps text-on-surface-variant mb-2">RECONNAISSANCE MODE</p>
+                            <h2 class="font-display text-6xl text-primary mb-4">??</h2>
+                            
+                            <div class="max-w-xs mx-auto mb-8">
+                                <input type="number" id="guessInput" min="1" max="100" placeholder="00" class="guess-input" />
+                            </div>
+                            
+                            <button class="btn-primary btn-large w-full max-w-xs mx-auto" onclick="handleGuess()">
+                                ANALYZE GUESS
+                            </button>
+                            
+                            <div class="mt-8 flex justify-center gap-4" id="hintContainer">
+                                <button class="btn-outline" onclick="requestHint()">
+                                    <span class="material-symbols-outlined text-sm" data-icon="lightbulb">lightbulb</span>
+                                    <span class="font-label-caps text-xs">REQUEST INTEL (-50 XP)</span>
+                                </button>
+                            </div>
+                            
+                            <p id="feedbackText" class="feedback-text mt-8 font-body text-lg italic font-bold"></p>
+                        </div>
+                        
+                        <!-- Result View -->
+                        <div id="resultView" class="hidden">
+                            <span class="material-symbols-outlined result-icon" data-icon="check_circle" id="resultIcon">check_circle</span>
+                            <h2 id="resultTitle" class="result-title">ACCESS GRANTED</h2>
+                            <p id="resultMsg" class="text-on-surface-variant mb-8 text-lg"></p>
+                            
+                            <div class="glass-card max-w-sm mx-auto p-6 rounded-2xl mb-8">
+                                <p class="font-label-caps text-on-surface-variant mb-2">REWARD ACCRUED</p>
+                                <p id="xpAwarded" class="font-display text-3xl text-secondary">+0 XP</p>
+                            </div>
+                            
+                            <button class="btn-outline text-primary justify-center w-full max-w-xs mx-auto py-4 font-bold tracking-widest text-lg" style="border-color: var(--primary);" onclick="resetGame()">
+                                RE-INITIALIZE
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tutorial / System Status -->
+                    <div class="glass-card p-4 rounded-2xl flex items-center gap-6 animate-entrance delay-1 mt-8">
+                        <div class="p-4 rounded-xl" style="background: rgba(225, 253, 255, 0.1);">
+                            <span class="material-symbols-outlined text-3xl text-primary" data-icon="terminal">terminal</span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="font-label-caps text-primary">SYSTEM OVERRIDE READY</p>
+                            <p class="text-on-surface-variant text-sm mt-1">Intercept the 8-bit encrypted sequence between 1 and 100. Higher accuracy earns multiplier rewards.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div> <!-- end view-dashboard -->
+            
+            <!-- Other Views -->
+            <div id="view-history" class="view-section hidden w-full" style="max-width: 896px;">
+                <h2 class="font-display text-4xl text-primary mb-4 text-center">EXTENDED LOG</h2>
+                <div class="glass-card p-6 rounded-2xl w-full">
+                    <p class="text-on-surface-variant text-center">Full decryption history will be cataloged here...</p>
+                </div>
+            </div>
+            
+            <div id="view-achievements" class="view-section hidden w-full" style="max-width: 896px;">
+                <h2 class="font-display text-4xl text-primary mb-4 text-center">ACHIEVEMENTS</h2>
+                <div class="glass-card p-6 rounded-2xl w-full flex flex-col gap-4">
+                    <div class="flex items-center gap-4 p-4 border rounded-xl" style="background: rgba(255, 255, 255, 0.05)">
+                        <span class="material-symbols-outlined text-4xl text-secondary" data-icon="military_tech">military_tech</span>
+                        <div>
+                            <p class="font-bold text-lg text-primary">FIRST DECRYPTION</p>
+                            <p class="text-sm text-on-surface-variant">Successfully guessed the first number.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-4 border rounded-xl" style="background: rgba(255, 255, 255, 0.05)">
+                        <span class="material-symbols-outlined text-4xl text-error" data-icon="electric_bolt">electric_bolt</span>
+                        <div>
+                            <p class="font-bold text-lg text-primary">SPEED DEMON</p>
+                            <p class="text-sm text-on-surface-variant">Complete a hard level in under 10 seconds.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="view-leaderboard" class="view-section hidden w-full" style="max-width: 896px;">
+                <h2 class="font-display text-4xl text-primary mb-4 text-center">GLOBAL RANKINGS</h2>
+                <div class="rankings-grid">
+                    <div class="glass-card p-6 rounded-2xl w-full">
+                        <p class="text-on-surface-variant mb-4 text-center">Elite operative standings across the network.</p>
+                        <div id="fullLeaderboardList"></div>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl w-full flex flex-col" style="min-height: 350px;">
+                        <p class="text-on-surface-variant mb-4 text-center font-label-caps">XP Distribution Analysis</p>
+                        <div class="w-full relative flex-grow flex items-center justify-center" style="min-height: 280px; position: relative;">
+                            <canvas id="rankingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="view-settings" class="view-section hidden w-full" style="max-width: 896px;">
+                <h2 class="font-display text-4xl text-primary mb-4 text-center">SYSTEM SETTINGS</h2>
+                <div class="glass-card p-6 rounded-2xl w-full flex flex-col gap-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-lg text-on-surface">Audio Feed</p>
+                            <p class="text-sm text-on-surface-variant">Toggle background network activity sounds.</p>
+                        </div>
+                        <button class="btn-outline text-primary">TOGGLE</button>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-lg text-on-surface">Visual Effects</p>
+                            <p class="text-sm text-on-surface-variant">Enable advanced shader processing.</p>
+                        </div>
+                        <button class="btn-outline text-primary">ENABLED</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="view-upgrade" class="view-section hidden w-full" style="max-width: 896px;">
+                <h2 class="font-display text-4xl text-primary mb-4 text-center">BLACK MARKET</h2>
+                <div class="glass-card p-6 rounded-2xl w-full text-center">
+                    <span class="material-symbols-outlined text-6xl text-secondary mb-4" data-icon="shopping_cart">shopping_cart</span>
+                    <p class="text-on-surface-variant">New encryption breakers and intel tools coming soon.</p>
+                </div>
+            </div>
+            
+            <div id="view-terms" class="view-section hidden w-full max-w-2xl">
+                <h2 class="font-display text-4xl text-primary mb-4 text-center">TERMS OF SERVICE</h2>
+                <div class="glass-card p-6 rounded-2xl w-full">
+                    <p class="text-on-surface-variant text-sm">By accessing the Neon Guess Protocol, you agree to forfeit all physical assets to the network. Unauthorized decryption attempts will be met with immediate digital retaliation.</p>
+                </div>
+            </div>
+            
+            <div id="view-privacy" class="view-section hidden w-full max-w-2xl">
+                <h2 class="font-display text-4xl text-primary mb-4 text-center">PRIVACY POLICY</h2>
+                <div class="glass-card p-6 rounded-2xl w-full">
+                    <p class="text-on-surface-variant text-sm">We collect everything. Your neural patterns are safely stored on our quantum drives for targeted advertising.</p>
+                </div>
+            </div>
+            
+            <div id="view-support" class="view-section hidden w-full max-w-2xl">
+                <h2 class="font-display text-4xl text-primary mb-4 text-center">NETWORK SUPPORT</h2>
+                <div class="glass-card p-6 rounded-2xl w-full text-center">
+                    <p class="text-on-surface-variant mb-4">Encountering anomalies in the mainframe?</p>
+                    <button class="btn-primary max-w-xs mx-auto">INITIATE DIAGNOSTIC</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer Navigation -->
+    <footer class="footer">
+        <p class="font-label-caps text-on-surface">© 2024 NEON GUESS PROTOCOL</p>
+        <div class="flex gap-6 footer-links">
+            <a href="#" class="nav-btn" data-target="view-terms">Terms</a>
+            <a href="#" class="nav-btn" data-target="view-privacy">Privacy</a>
+            <a href="#" class="nav-btn" data-target="view-support">Support</a>
+        </div>
+    </footer>
+</body>
+</html>
